@@ -5,7 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test-dev": "jest __tests__/*",
-    "dev": "nodemon -- -r ./env/development.js index.js"
+    "dev": "nodemon -- -r ./env/development.js index.js",
+    "setup-dbs": "psql -f ./db/setup.sql",
+    "seed": "node -r ./env/development ./db/seeds/run-seed.js",
+    "test": "jest __tests__/*",
+    "start": "node index.js",
+    "seed:prod": "NODE_ENV=production DATABASE_URL=$(heroku config:get DATABASE_URL) npm run seed"
   },
   "keywords": [],
   "author": "",
@@ -18,10 +23,18 @@
     "loglevel-plugin-prefix": "^0.8.4",
     "mongoose": "^6.2.4",
     "nodemon": "^2.0.15",
+    "pg": "^8.7.3",
+    "pg-format": "^1.0.4",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
     "jest": "^27.5.1",
+    "jest-sorted": "^1.0.14",
     "supertest": "^6.2.2"
+  },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "jest-sorted"
+    ]
   }
 }

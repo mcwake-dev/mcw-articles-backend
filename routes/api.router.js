@@ -1,8 +1,8 @@
 const express = require("express");
 
 const apiRouter = express.Router();
-const commentsRouter = require("./comments.router");
+const articlesRouter = require("./articles.router");
 
-apiRouter.use("/comments", commentsRouter);
+apiRouter.use("/articles", articlesRouter);
 
 module.exports = apiRouter;

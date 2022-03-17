@@ -5,7 +5,7 @@ const apiRouter = require("./routes/api.router");
 const {
   handleCustomErrors,
   handleServerErrors,
-  handleMongooseErrors,
+  handlePsqlErrors,
 } = require("./errors");
 const log = require("./log");
 const logger = log.getLogger("appRouter");
@@ -20,7 +20,7 @@ app.all("*", (req, res) => {
 });
 
 app.use(handleCustomErrors);
-app.use(handleMongooseErrors);
+app.use(handlePsqlErrors);
 app.use(handleServerErrors);
 
 module.exports = app;
