@@ -6,6 +6,16 @@ const app = require("../../app");
 const testData = require("../../db/data/test");
 const seed = require("../../db/seeds/seed");
 const db = require("../../db/connection");
+const jwt = require("jsonwebtoken");
+
+const getToken = (subject) =>
+  jwt.sign({ username: subject }, process.env.JWT_PRIVATE_KEY, {
+    issuer: process.env.JWT_ISSUER,
+    audience: process.env.JWT_AUDIENCE,
+    subject,
+    expiresIn: process.env.JWT_EXPIRES,
+    algorithm: process.env.JWT_ALGORITHM,
+  });
 
 beforeAll(async () => {
   await seed(testData);
@@ -38,9 +48,27 @@ describe("GET /api/articles/:article_id", () => {
 });
 
 describe("PATCH /api/articles/:article_id", () => {
+  it("should respond with a 401 error if accessed without a valid token", () =>
+    request(app)
+      .patch("/api/articles/1")
+      .send({
+        title: "Living in the shadow of a greater man",
+        body: "I find this existence challenging",
+      })
+      .expect(401));
+  it("should respond with a 401 error if accessed with a valid token for a user who is not the author", () =>
+    request(app)
+      .patch("/api/articles/1")
+      .set("Authorization", `Bearer ${getToken("wronguser")}`)
+      .send({
+        title: "Living in the shadow of a greater man",
+        body: "I find this existence challenging",
+      })
+      .expect(401));
   it("should respond with an updated article when passed a valid article ID and valid request body", () =>
     request(app)
       .patch("/api/articles/1")
+      .set("Authorization", `Bearer ${getToken("jessjelly")}`)
       .send({
         title: "Living in the shadow of a greater man",
         body: "I find this existence challenging",
@@ -58,11 +86,21 @@ describe("PATCH /api/articles/:article_id", () => {
         );
       }));
   it("should respond with a 404 when passed a non-existent valid article ID", () =>
-    request(app).patch("/api/articles/999").expect(404));
+    request(app)
+      .patch("/api/articles/999")
+      .set("Authorization", `Bearer ${getToken("jessjelly")}`)
+      .expect(404));
   it("should respond with a 400 when passed an invalid article ID", () =>
-    request(app).patch("/api/articles/dave").expect(400));
+    request(app)
+      .patch("/api/articles/dave")
+      .set("Authorization", `Bearer ${getToken("jessjelly")}`)
+      .expect(400));
   it("should respond with a 200 when passed a valid article ID but an invalid request body (key invalid)", () =>
-    request(app).patch("/api/articles/1").send({ nernerner: 1 }).expect(400));
+    request(app)
+      .patch("/api/articles/1")
+      .set("Authorization", `Bearer ${getToken("jessjelly")}`)
+      .send({ nernerner: 1 })
+      .expect(400));
 });
 
 describe("GET /api/articles", () => {
@@ -157,13 +195,20 @@ describe("order", () => {
 });
 
 describe("DELETE /api/articles/:article_id", () => {
+  it("should respond with a 401 error if accessed without a valid token", () =>
+    request(app).delete(`/api/articles/12`).expect(401));
+  it("should respond with a 401 error if accessed with a valid token for a user who is not the author", () =>
+    request(app)
+      .delete(`/api/articles/12`)
+      .set("Authorization", `Bearer ${getToken("wronguser")}`)
+      .expect(401));
   it("should delete an article when supplied with a valid, existent article ID, returning a 204", () => {
     return db
       .query(
         "INSERT INTO articles (title, author, body, created_at) VALUES ($1, $2, $3, $4) RETURNING *;",
         [
           "Living in the shadow of a great man",
-          "butter_bridge",
+          "jessjelly",
           "I find this existence challenging",
           new Date(1594329060000),
         ]
@@ -173,19 +218,29 @@ describe("DELETE /api/articles/:article_id", () => {
 
         return request(app)
           .delete(`/api/articles/${articleToDelete.article_id}`)
+          .set("Authorization", `Bearer ${getToken("jessjelly")}`)
           .expect(204);
       });
   });
   it("should return a 404 error if the article ID does not exist", () =>
-    request(app).delete(`/api/articles/9999`).expect(404));
+    request(app)
+      .delete(`/api/articles/9999`)
+      .set("Authorization", `Bearer ${getToken("jessjelly")}`)
+      .expect(404));
   it("should return a 400 error if an invalid article ID is supplied", () =>
-    request(app).delete(`/api/articles/:blablabla`).expect(400));
+    request(app)
+      .delete(`/api/articles/:blablabla`)
+      .set("Authorization", `Bearer ${getToken("jessjelly")}`)
+      .expect(400));
 });
 
 describe("POST /api/articles", () => {
+  it("should respond with a 401 error if accessed without a valid token", () =>
+    request(app).post("/api/articles").expect(401));
   it("should return a new article and a 201 when passed a valid new article object", () =>
     request(app)
       .post("/api/articles")
+      .set("Authorization", `Bearer ${getToken("jessjelly")}`)
       .send({
         author: "icellusedkars",
         title: "A nice title",
@@ -204,6 +259,7 @@ describe("POST /api/articles", () => {
   it("should return a 400 error if required parameters are missing", () =>
     request(app)
       .post("/api/articles")
+      .set("Authorization", `Bearer ${getToken("jessjelly")}`)
       .send({
         title: "A nice title",
         body: "A nice body (for an article)",
