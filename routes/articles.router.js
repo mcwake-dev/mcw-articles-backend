@@ -1,7 +1,6 @@
-const express = require("express");
+const router = require("express").Router();
 
 const { verifyToken, isAuthor } = require("../middleware/token");
-const router = express.Router();
 const {
   getArticle,
   getArticles,

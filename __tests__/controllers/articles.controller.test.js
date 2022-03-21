@@ -6,16 +6,7 @@ const app = require("../../app");
 const testData = require("../../db/data/test");
 const seed = require("../../db/seeds/seed");
 const db = require("../../db/connection");
-const jwt = require("jsonwebtoken");
-
-const getToken = (subject) =>
-  jwt.sign({ username: subject }, process.env.JWT_PRIVATE_KEY, {
-    issuer: process.env.JWT_ISSUER,
-    audience: process.env.JWT_AUDIENCE,
-    subject,
-    expiresIn: process.env.JWT_EXPIRES,
-    algorithm: process.env.JWT_ALGORITHM,
-  });
+const getToken = require("../../utils/makeToken");
 
 beforeAll(async () => {
   await seed(testData);
