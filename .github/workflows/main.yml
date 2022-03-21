@@ -20,7 +20,7 @@ env:
   JWT_AUDIENCE: ${{secrets.JWT_AUDIENCE}}
   JWT_EXPIRES: ${{secrets.JWT_EXPIRES}}
   JWT_ALGORITHM: ${{secrets.JWT_ALGORITHM}}
-  DATABASE: ${{secrets.DATABASE}}
+  DATABASE_URL: ${{secrets.DATABASE_URL}}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
