@@ -36,7 +36,7 @@ jobs:
         with:
           node-version: "17"
       - run: npm install
-      - run: npm run test-remote
+      - run: npm run test
 
   deploy:
     runs-on: ubuntu-latest
