@@ -1,6 +1,6 @@
-console.log(process.env.DATABASE_URL);
-
-if(!process.env.DATABASE_URL) require("../../env/test");
+try {
+  require("../../env/test");
+} catch(err) {}
 
 const { expect, it, describe, beforeAll, afterAll } = require("@jest/globals");
 const request = require("supertest");
