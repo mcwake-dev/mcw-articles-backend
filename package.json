@@ -1,5 +1,5 @@
 {
-  "name": "mcw-comments",
+  "name": "mcw-articles-backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,7 +9,7 @@
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "node -r ./env/development ./db/seeds/run-seed.js",
     "test": "jest __tests__/*",
-    "start": "node index.js",
+    "start": "nodemon index.js",
     "seed:prod": "NODE_ENV=production DATABASE_URL=$(heroku config:get DATABASE_URL) npm run seed"
   },
   "keywords": [],
