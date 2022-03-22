@@ -5,7 +5,7 @@ if (!process.env.PGDATABASE && !process.env.DATABASE_URL) {
 }
 
 const config =
-  process.env.NODE_ENV === "production"
+  process.env.NODE_ENV === "production" || process.env.NODE_ENV === "test-remote"
     ? {
         connectionString: process.env.DATABASE_URL,
         ssl: {
