@@ -156,12 +156,36 @@ To run all tests and ensure correct operation of the API, use the following comm
     npm test
 ```
 
-## CI/CD on Heroku
+## CI/CD
 
-Should you wish to use the included Github Actions workflow to automate testing and deployment to [Heroku](https://dashboard.heroku.com/account), configure the following Secrets in your Settings on Github.com for your fork of this repository:
+Should you wish to use the included Github Actions workflow to automate testing and deployment to [Heroku](https://dashboard.heroku.com/account), you will need to configure Secrets for all the keys above, as well as the following additional keys:
 
 ```
     HEROKU_API_KEY - Your api key from Heroku
     HEROKU_APP_NAME - Your unique app name on Heroku
     HEROKU_EMAIL_ADDRESS - Email address associated with your Heroku account
+```
+
+## Deployment
+
+To complete deployment, add the Heroku Postgres addon to your app and configure the following keys in your Heroku app:
+
+```
+    // The RSA public key from your mcw-auth-backend app
+    JWT_PUBLIC_KEY: "-----BEGIN RSA PUBLIC KEY-----\n" +
+                        ...
+                        "-----END RSA PUBLIC KEY-----\n",
+    // The issuer value for the JWT - this must match across
+    // all used services and the authentication service
+    JWT_ISSUER: "MCWake",
+    // The connection string for the live database
+    DATABASE: "postgres://...",
+    // The name of the platform which JWTs will be issued for
+    JWT_AUDIENCE: "MCW Platform",
+    // The expiration string for the JWT, eg 30d = 30 days
+    JWT_EXPIRES: "30d",
+    // The algorithm used to sign JWTs
+    // This must be an RSA algorithm
+    // i.e. HS256 would be invalid
+    JWT_ALGORITHM: "RS256"
 ```
